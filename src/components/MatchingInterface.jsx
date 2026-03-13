@@ -38,7 +38,7 @@ export default function MatchingInterface({
   const [currentItem, setCurrentItem] = useState(null);
   const [results, setResults] = useState([]);
   const [maxResults, setMaxResults] = useState(initialMaxResults);
-  const [threshold] = useState(initialThreshold);
+  const [threshold, setThreshold] = useState(initialThreshold);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const fuseRef = useRef(null);
@@ -48,6 +48,15 @@ export default function MatchingInterface({
   useEffect(() => {
     fuseRef.current = buildFuseIndex(targetList);
   }, [targetList]);
+
+  // Re-run search if threshold or maxResults changes for current item
+  useEffect(() => {
+    if (currentItem && fuseRef.current) {
+      const query = (currentItem.omschrijving || '').trim();
+      const res = query ? searchMatches(query, targetList, fuseRef.current, { threshold, maxResults }) : [];
+      setResults(res.slice(0, maxResults));
+    }
+  }, [threshold, maxResults]);
 
   // Auto-advance to first unmatched item
   useEffect(() => {
@@ -153,6 +162,16 @@ export default function MatchingInterface({
             <label className="setting-label">
               Max resultaten:
               <input className="setting-input" type="number" min={1} max={20} value={maxResults} onChange={e => setMaxResults(+e.target.value || 1)} />
+            </label>
+            <label className="setting-label">
+              Drempelwaarde (%):
+              <input 
+                className="setting-input" 
+                type="number" 
+                min={0} max={100} 
+                value={Math.round(threshold * 100)} 
+                onChange={e => setThreshold((+e.target.value || 0) / 100)} 
+              />
             </label>
           </div>
         )}
