@@ -38,29 +38,49 @@ export function tokenize(str) {
   return tokens;
 }
 
-function tokenScore(tokensA, tokensB) {
+export function tokenScore(tokensA, tokensB) {
   if (!tokensA.length || !tokensB.length) return 0;
-  const mapB = new Map(tokensB.map(({ token, weight }) => [token, weight]));
+
+  // tokensB can be treated as a "bag of weights" to pull from
+  const mapB = new Map();
+  for (const { token, weight } of tokensB) {
+    mapB.set(token, (mapB.get(token) || 0) + weight);
+  }
 
   let matchedWeight = 0;
   let totalWeightA = 0;
   for (const { token, weight } of tokensA) {
     totalWeightA += weight;
+    
+    // 1. Try exact match
     if (mapB.has(token)) {
-      matchedWeight += weight;
-    } else {
+      const avail = mapB.get(token);
+      const match = Math.min(weight, avail);
+      matchedWeight += match;
+      if (avail - match <= 0) mapB.delete(token);
+      else mapB.set(token, avail - match);
+    } 
+    // 2. Try substring match if no exact match or leftover weight
+    else {
       for (const [bToken, bWeight] of mapB) {
         if (bToken.includes(token) || token.includes(bToken)) {
-          matchedWeight += Math.min(weight, bWeight) * 0.7;
+          const match = Math.min(weight, bWeight);
+          matchedWeight += match * 0.7;
+          if (bWeight - match <= 0) mapB.delete(bToken);
+          else mapB.set(bToken, bWeight - match);
           break;
         }
       }
     }
   }
+
   let totalWeightB = 0;
   for (const { weight } of tokensB) totalWeightB += weight;
+
+  // Jaccard similarity: intersection / union
+  // union = A + B - intersection
   const union = totalWeightA + totalWeightB - matchedWeight;
-  return union > 0 ? matchedWeight / union : 0;
+  return union > 0 ? Math.min(1, matchedWeight / union) : 0;
 }
 
 export function buildFuseIndex(targetList) {
