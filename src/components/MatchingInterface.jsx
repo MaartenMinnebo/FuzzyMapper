@@ -97,6 +97,15 @@ export default function MatchingInterface({
       return;
     }
 
+    // Auto-confirm 100% matches
+    if (res[0].score >= 1) {
+      const newMatches = { ...m, [item.uuid]: { item: res[0].item } };
+      setMatches(newMatches);
+      scheduleAutoSave(sl, newMatches);
+      setTimeout(() => advanceToNext(item, sl, newMatches), 0);
+      return;
+    }
+
     setResults(res.slice(0, maxResults));
   }
 
