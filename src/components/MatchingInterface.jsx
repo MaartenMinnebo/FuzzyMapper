@@ -98,7 +98,7 @@ export default function MatchingInterface({
     }
 
     // Auto-confirm 100% matches
-    if (res[0].score >= 1) {
+    if (Math.round(res[0].score * 100) >= 100) {
       const newMatches = { ...m, [item.uuid]: { item: res[0].item } };
       setMatches(newMatches);
       scheduleAutoSave(sl, newMatches);

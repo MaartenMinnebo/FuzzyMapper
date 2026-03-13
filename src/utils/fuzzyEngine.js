@@ -108,7 +108,8 @@ export function searchMatches(query, targetList, fuse, { threshold = 0.4, maxRes
   const scored = targetList.map(item => {
     const tScore = tokenScore(queryTokens, item._tokens || []);
     const fScore = fuseScoreMap.get(item.uuid) || 0;
-    const combined = tScore * 0.70 + fScore * 0.30;
+    let combined = tScore * 0.70 + fScore * 0.30;
+    if (combined > 0.999) combined = 1; // Clamp near-perfect matches
     return { item, score: combined, tokenScore: tScore };
   });
 
