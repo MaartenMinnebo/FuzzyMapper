@@ -139,14 +139,14 @@ export default function MatchingInterface({
           <button className="btn-secondary btn-sm settings-toggle" onClick={() => setSettingsOpen(s => !s)}>
             ⚙ Instellingen
           </button>
-          <button className="btn-secondary btn-sm" style={{ marginLeft: 'auto' }} onClick={onSaveRequest}>
+          <button className="btn-secondary btn-sm" style={{ marginLeft: 'auto' }} onClick={() => onSaveRequest(matches)}>
             <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
               <polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" />
             </svg>
             {sessionId ? 'Opgeslagen ✓' : 'Opslaan'}
           </button>
-          <button className="btn-primary btn-sm" onClick={onShowResults}>Toon resultaten</button>
+          <button className="btn-primary btn-sm" onClick={() => onShowResults(matches)}>Toon resultaten</button>
         </div>
         {settingsOpen && (
           <div className="settings-bar">
@@ -198,7 +198,7 @@ export default function MatchingInterface({
               </svg>
               <p>Selecteer een item uit de bronlijst<br />of alle items zijn verwerkt.</p>
               {remaining === 0 && (
-                <button className="btn-primary" style={{ marginTop: 16 }} onClick={onShowResults}>
+                <button className="btn-primary" style={{ marginTop: 16 }} onClick={() => onShowResults(matches)}>
                   Toon resultaten &amp; exporteer
                 </button>
               )}

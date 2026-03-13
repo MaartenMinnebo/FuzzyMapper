@@ -258,9 +258,9 @@ function AppInner({ session }) {
               initialMatches={matches}
               sessionId={sessionId}
               sessionName={sessionName}
-              onSaveRequest={() => setShowSaveModal(true)}
-              onShowResults={() => setStep(STEPS.DONE)}
-              onBackToHome={() => setStep(STEPS.HOME)}
+              onSaveRequest={(m) => { setMatches(m); setShowSaveModal(true); }}
+              onShowResults={(m) => { setMatches(m); setStep(STEPS.DONE); }}
+              onBackToHome={(m) => { setMatches(m); setStep(STEPS.HOME); }}
             />
             {showSaveModal && (
               <SaveModal
